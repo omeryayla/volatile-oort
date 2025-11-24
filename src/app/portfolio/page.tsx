@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Navbar } from '@/components/layout/Navbar';
 import { Modal } from '@/components/ui/Modal';
-import { getPortfolioSummary, saveHoldings, getStoredHoldings, fetchQuote, PortfolioSummary, Holding } from '@/lib/portfolio';
+import { getPortfolioSummary, addTransaction, fetchQuote, PortfolioSummary, Holding } from '@/lib/portfolio';
 import { Plus, Search, Filter, MoreHorizontal, Loader2, X } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
 import { StockLogo } from '@/components/ui/StockLogo';
@@ -104,15 +104,12 @@ export default function PortfolioPage() {
                 return;
             }
 
-            const newHolding: Holding = {
-                id: Date.now().toString(),
+            await addTransaction({
                 symbol: quote.symbol,
                 quantity: Number(quantity),
-                avgPrice: Number(avgPrice)
-            };
-
-            const currentHoldings = getStoredHoldings();
-            saveHoldings([...currentHoldings, newHolding]);
+                price: Number(avgPrice),
+                type: 'BUY' // Default to BUY for now
+            });
 
             await loadData();
             setIsModalOpen(false);
